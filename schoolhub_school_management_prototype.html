@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SchoolHub — School Management System</title>
+<style>
+:root{--navy:#14233b;--blue:#2563eb;--pale:#eef4ff;--bg:#f5f7fb;--text:#172033;--muted:#64748b;--line:#e2e8f0;--green:#15803d;--red:#b91c1c}
+*{box-sizing:border-box}body{margin:0;font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
+header{background:var(--navy);color:white;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-size:21px;font-weight:800;letter-spacing:.2px}.brand small{display:block;font-size:12px;font-weight:400;color:#cbd5e1}
+select,input,textarea,button{font:inherit}button{cursor:pointer;border:0;border-radius:9px;padding:10px 14px;background:var(--blue);color:white;font-weight:650}button.secondary{background:#e8eef8;color:#1e293b}button.danger{background:#fee2e2;color:#991b1b}button.small{padding:6px 9px;font-size:13px}
+select,input,textarea{border:1px solid #cbd5e1;border-radius:9px;padding:10px;background:white;color:var(--text);width:100%;min-width:0}
+.app{display:grid;grid-template-columns:235px 1fr;min-height:calc(100vh - 72px)}nav{background:white;border-right:1px solid var(--line);padding:18px 12px}
+nav button{display:flex;width:100%;text-align:left;align-items:center;gap:10px;margin:3px 0;background:transparent;color:#334155;font-weight:650}
+nav button.active,nav button:hover{background:var(--pale);color:#1d4ed8}
+main{padding:24px;max-width:1500px;width:100%;margin:auto}.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+h1{font-size:26px;margin:0 0 4px}h2{font-size:18px;margin:0 0 14px}p.muted,.muted{color:var(--muted);margin:0}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:18px 0}
+.card{background:white;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 2px 8px #0f172a05}
+.metric{font-size:27px;font-weight:800;margin-top:7px}.metric-label{color:var(--muted);font-size:13px}
+.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:18px;margin:14px 0}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.row .fit{flex:0 0 auto}
+.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:5px;color:#475569}
+.field.full{grid-column:1/-1}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.tablewrap{overflow-x:auto}.tag{display:inline-block;padding:4px 8px;border-radius:99px;background:#e0f2fe;color:#075985;font-size:12px;font-weight:700}.tag.red{background:#fee2e2;color:#991b1b}.tag.green{background:#dcfce7;color:#166534}
+.notice{padding:12px 14px;border-radius:10px;background:#fff7ed;color:#9a3412;margin:12px 0;font-size:13px}
+.hidden{display:none!important}.empty{color:var(--muted);padding:16px 0}.book{border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px}.book h3{margin:0;font-size:16px}.book p{margin:0;color:var(--muted);font-size:13px}.booklist{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+footer{padding:18px 24px;color:var(--muted);font-size:12px;text-align:center}
+@media(max-width:950px){.app{grid-template-columns:1fr}nav{display:flex;overflow:auto;gap:5px;border-right:0;border-bottom:1px solid var(--line);padding:8px}nav button{white-space:nowrap;width:auto;flex:0 0 auto}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.booklist{grid-template-columns:repeat(2,minmax(0,1fr))}main{padding:16px}}
+@media(max-width:560px){.grid,.formgrid,.booklist{grid-template-columns:1fr}.field.full{grid-column:auto}header{padding:14px}h1{font-size:22px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">🏫 SchoolHub <small>School Management System · Starter prototype</small></div>
+  <div class="row" style="max-width:390px">
+    <label style="color:#e2e8f0;font-size:13px;align-self:center;flex:0 0 auto" for="role">Role</label>
+    <select id="role" aria-label="Choose demo role" style="max-width:230px">
+      <option>Head Department</option><option>School Reception</option><option>Teacher Department</option><option>Finance Department</option><option>E-Lab</option>
+    </select>
+    <button class="secondary small" id="exportBtn">Export data</button>
+  </div>
+</header>
+<div class="app">
+<nav id="nav">
+<button class="active" data-page="dashboard">📊 Overview</button>
+<button data-page="reception">🛎️ Reception</button>
+<button data-page="teachers">🧑‍🏫 Teacher Dept</button>
+<button data-page="head">🧭 Head Dept</button>
+<button data-page="finance">💰 Finance</button>
+<button data-page="elab">📚 E-Lab</button>
+</nav>
+<main>
+<section id="page-dashboard">
+<div class="topline"><div><h1>School overview</h1><p class="muted">A central place to manage daily school records.</p></div><span class="tag">Demo mode</span></div>
+<div class="grid">
+<div class="card"><div class="metric-label">Learners registered</div><div class="metric" id="mLearners">0</div></div>
+<div class="card"><div class="metric-label">Teacher records</div><div class="metric" id="mTeachers">0</div></div>
+<div class="card"><div class="metric-label">Visitors today / recorded</div><div class="metric" id="mVisitors">0</div></div>
+<div class="card"><div class="metric-label">Net recorded balance</div><div class="metric" id="mBalance">$0.00</div></div>
+</div>
+<div class="panel"><h2>Quick actions</h2><div class="row">
+<button onclick="showPage('reception')">Register visitor / fee</button><button onclick="showPage('teachers')">Record attendance</button><button onclick="showPage('finance')">Add expense</button><button onclick="showPage('elab')">Open E-Lab</button>
+</div></div>
+<div class="panel"><h2>Recent activity</h2><div id="recent" class="empty">No activity yet. Add records in a department to get started.</div></div>
+<div class="notice">Prototype note: data is saved in this browser only. Before real school use, add secure accounts, a server database, backups and role-based access controls.</div>
+</section>
+
+<section id="page-reception" class="hidden">
+<div class="topline"><div><h1>School Reception</h1><p class="muted">Fees, visitors, school events and documents.</p></div></div>
+<div class="panel"><h2>Record a fee payment</h2>
+<form id="feeForm" class="formgrid">
+<div class="field"><label>Learner name</label><input name="learner" required placeholder="Full name"></div>
+<div class="field"><label>Amount paid (USD)</label><input name="amount" type="number" min="0.01" step=".01" required></div>
+<div class="field"><label>Payment reference / receipt</label><input name="reference" placeholder="Receipt number"></div>
+<div class="field"><label>Payment date</label><input name="date" type="date" required></div>
+<div class="field full"><button>Save fee payment</button></div>
+</form></div>
+<div class="panel"><h2>Register a visitor</h2>
+<form id="visitorForm" class="formgrid">
+<div class="field"><label>Visitor name</label><input name="name" required></div>
+<div class="field"><label>Phone (optional)</label><input name="phone" type="tel"></div>
+<div class="field"><label>Purpose of visit</label><input name="purpose" required placeholder="Meeting, delivery, parent visit..."></div>
+<div class="field"><label>Arrival time</label><input name="arrival" type="datetime-local" required></div>
+<div class="field full"><button>Register visitor</button></div>
+</form>
+<div class="tablewrap"><table><thead><tr><th>Name</th><th>Purpose</th><th>Phone</th><th>Arrival</th></tr></thead><tbody id="visitorsTable"></tbody></table></div>
+</div>
+<div class="panel"><h2>School events and media / files</h2>
+<form id="eventForm" class="formgrid">
+<div class="field"><label>Event or file title</label><input name="title" required placeholder="Sports day, meeting minutes..."></div>
+<div class="field"><label>Category</label><select name="category"><option>Event</option><option>Photo</option><option>Video</option><option>Document</option><option>Other file</option></select></div>
+<div class="field full"><label>Choose file (stored as a browser download in this demo is not guaranteed)</label><input name="file" type="file" accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"></div>
+<div class="field full"><button>Save event record</button></div>
+</form><div id="eventsList" class="empty">No event records yet.</div>
+</div>
+<div class="panel"><h2>Fee records</h2><div class="tablewrap"><table><thead><tr><th>Date</th><th>Learner</th><th>Amount</th><th>Reference</th></tr></thead><tbody id="feesTable"></tbody></table></div></div>
+</section>
+
+<section id="page-teachers" class="hidden">
+<div class="topline"><div><h1>Teacher Department</h1><p class="muted">Manage learner records and attendance.</p></div></div>
+<div class="panel"><h2>Add learner / student</h2>
+<form id="learnerForm" class="formgrid">
+<div class="field"><label>Full name</label><input name="name" required></div>
+<div class="field"><label>Student number</label><input name="studentNo" required></div>
+<div class="field"><label>Class / Form</label><input name="className" required placeholder="Form 2A"></div>
+<div class="field"><label>Guardian phone</label><input name="phone" type="tel" placeholder="+263..."></div>
+<div class="field full"><button>Add learner</button></div>
+</form>
+<div class="tablewrap"><table><thead><tr><th>Student no.</th><th>Name</th><th>Class</th><th>Guardian phone</th></tr></thead><tbody id="learnersTable"></tbody></table></div></div>
+<div class="panel"><h2>Add teacher</h2>
+<form id="teacherForm" class="formgrid">
+<div class="field"><label>Teacher full name</label><input name="name" required></div>
+<div class="field"><label>Employee number</label><input name="employeeNo" required></div>
+<div class="field"><label>Subject</label><input name="subject" required></div>
+<div class="field"><label>Phone</label><input name="phone" type="tel"></div>
+<div class="field full"><button>Add teacher</button></div>
+</form><div class="tablewrap"><table><thead><tr><th>Employee no.</th><th>Name</th><th>Subject</th><th>Phone</th></tr></thead><tbody id="teachersTable"></tbody></table></div></div>
+<div class="panel"><h2>Record attendance</h2>
+<form id="attendanceForm" class="formgrid">
+<div class="field"><label>Person type</label><select name="type"><option>Learner</option><option>Teacher</option></select></div>
+<div class="field"><label>Name</label><input name="name" required></div>
+<div class="field"><label>Date</label><input name="date" type="date" required></div>
+<div class="field"><label>Status</label><select name="status"><option>Present</option><option>Absent</option><option>Late</option><option>Excused</option></select></div>
+<div class="field full"><button>Save attendance</button></div>
+</form><div class="tablewrap"><table><thead><tr><th>Date</th><th>Type</th><th>Name</th><th>Status</th></tr></thead><tbody id="attendanceTable"></tbody></table></div></div>
+<div class="panel"><h2>Communication</h2><p class="muted">This demo stores a message draft locally. Real SMS, chat, voice and video calls require a backend and a messaging/calling provider.</p>
+<form id="messageForm" class="formgrid" style="margin-top:12px">
+<div class="field"><label>Recipient name</label><input name="recipient" required></div><div class="field"><label>Phone number</label><input name="phone" type="tel" required placeholder="+263..."></div>
+<div class="field full"><label>Message</label><textarea name="message" required rows="3"></textarea></div>
+<div class="field full"><button>Save message draft</button></div></form><div id="messagesList" class="empty">No saved drafts.</div>
+</div>
+</section>
+
+<section id="page-head" class="hidden">
+<div class="topline"><div><h1>Head Department</h1><p class="muted">Combined read-only view of records across the system.</p></div><button id="headRefresh">Refresh report</button></div>
+<div class="grid">
+<div class="card"><div class="metric-label">Attendance entries</div><div class="metric" id="hAttendance">0</div></div>
+<div class="card"><div class="metric-label">Fee income recorded</div><div class="metric" id="hIncome">$0.00</div></div>
+<div class="card"><div class="metric-label">Expenses recorded</div><div class="metric" id="hExpenses">$0.00</div></div>
+<div class="card"><div class="metric-label">Event / file records</div><div class="metric" id="hEvents">0</div></div>
+</div>
+<div class="panel"><h2>Attendance summary</h2><div id="attendanceSummary" class="empty">No attendance records yet.</div></div>
+<div class="panel"><h2>Latest fees, expenses and events</h2><div id="headLatest" class="empty">No records yet.</div></div>
+</section>
+
+<section id="page-finance" class="hidden">
+<div class="topline"><div><h1>Finance Department</h1><p class="muted">Track income, expenditure and balance.</p></div></div>
+<div class="grid">
+<div class="card"><div class="metric-label">Income (fees recorded)</div><div class="metric" id="fIncome">$0.00</div></div>
+<div class="card"><div class="metric-label">Expenses</div><div class="metric" id="fExpenses">$0.00</div></div>
+<div class="card"><div class="metric-label">Net recorded balance</div><div class="metric" id="fBalance">$0.00</div></div>
+<div class="card"><div class="metric-label">Transactions</div><div class="metric" id="fCount">0</div></div>
+</div>
+<div class="panel"><h2>Record school expense</h2>
+<form id="expenseForm" class="formgrid">
+<div class="field"><label>Expense description</label><input name="description" required placeholder="Electricity, stationery, repairs..."></div>
+<div class="field"><label>Amount (USD)</label><input name="amount" type="number" min=".01" step=".01" required></div>
+<div class="field"><label>Category</label><select name="category"><option>Salaries</option><option>Utilities</option><option>Learning materials</option><option>Maintenance</option><option>Transport</option><option>Other</option></select></div>
+<div class="field"><label>Date</label><input name="date" type="date" required></div>
+<div class="field full"><label>Reference / notes</label><input name="reference"></div>
+<div class="field full"><button>Save expense</button></div>
+</form></div>
+<div class="panel"><h2>Expense records</h2><div class="tablewrap"><table><thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th></tr></thead><tbody id="expensesTable"></tbody></table></div></div>
+</section>
+
+<section id="page-elab" class="hidden">
+<div class="topline"><div><h1>E-Lab / Electronic Library</h1><p class="muted">Find learning resources and listen to text read aloud.</p></div></div>
+<div class="panel"><h2>Search library resources</h2>
+<div class="row"><div><label class="field"><span class="muted">Search title, subject or keyword</span><input id="bookSearch" placeholder="e.g. mathematics, biology, history"></label></div><div style="max-width:180px"><label class="field"><span class="muted">Resource type</span><select id="bookType"><option value="all">All resources</option><option>Textbook</option><option>Notes</option><option>Practice</option></select></label></div></div>
+<div class="notice">Only upload or download books you are allowed to use. This starter includes sample catalogue entries; connect a licensed library or upload your school's authorised materials for a real catalogue.</div>
+<div id="books" class="booklist"></div>
+</div>
+<div class="panel"><h2>Read aloud / text-to-speech</h2>
+<div class="field"><label>Text to read aloud</label><textarea id="readText" rows="5" placeholder="Paste your notes or type a passage here..."></textarea></div>
+<div class="formgrid" style="margin-top:12px">
+<div class="field"><label>Voice</label><select id="voiceSelect"><option value="">Default available voice</option></select></div>
+<div class="field"><label>Voice style (if supported)</label><select id="voiceStyle"><option value="any">Any available voice</option><option value="female">Feminine-sounding voice</option><option value="male">Masculine-sounding voice</option></select></div>
+<div class="field"><label>Speaking speed</label><select id="rate"><option value=".8">Slow</option><option value="1" selected>Normal</option><option value="1.2">Fast</option></select></div>
+<div class="field"><label>Pitch / age-like tone</label><select id="pitch"><option value=".7">Lower pitch</option><option value="1" selected>Normal pitch</option><option value="1.3">Higher pitch</option></select></div>
+</div>
+<div class="row" style="margin-top:12px"><button id="speakBtn" type="button">🔊 Read aloud</button><button class="secondary" id="pauseBtn" type="button">Pause</button><button class="secondary" id="resumeBtn" type="button">Resume</button><button class="danger" id="stopBtn" type="button">Stop</button></div>
+<p class="muted" style="margin-top:10px;font-size:13px">Available voices depend on your browser and device. Pitch is only an approximation; actual child/adult voice selection may not be available.</p>
+</div>
+</section>
+</main>
+</div>
+<footer>SchoolHub prototype · Use fictional data for testing. Secure deployment requires a server, authentication, backups and privacy safeguards.</footer>
+<script>
+const KEY='schoolhub_prototype_v1';
+const initial={learners:[],teachers:[],visitors:[],fees:[],events:[],attendance:[],expenses:[],messages:[]};
+let db;
+try{db=JSON.parse(localStorage.getItem(KEY))||structuredClone(initial)}catch(e){db=structuredClone(initial)}
+function save(){localStorage.setItem(KEY,JSON.stringify(db));renderAll()}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function money(n){return '$'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function dateNow(){return new Date().toISOString().slice(0,10)}
+function val(form,name){return new FormData(form).get(name)?.toString().trim()||''}
+function num(form,name){return Number(val(form,name))}
+function rows(id,items,fn,empty='No records yet.'){const el=document.getElementById(id);el.innerHTML=items.length?items.slice().reverse().map(fn).join(''):`<tr><td colspan="8" class="empty">${empty}</td></tr>`}
+function renderAll(){
+ document.getElementById('mLearners').textContent=db.learners.length;
+ document.getElementById('mTeachers').textContent=db.teachers.length;
+ document.getElementById('mVisitors').textContent=db.visitors.length;
+ const income=db.fees.reduce((s,x)=>s+Number(x.amount),0),expenses=db.expenses.reduce((s,x)=>s+Number(x.amount),0);
+ document.getElementById('mBalance').textContent=money(income-expenses);
+ rows('visitorsTable',db.visitors,x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.purpose)}</td><td>${esc(x.phone||'—')}</td><td>${esc(x.arrival.replace('T',' '))}</td></tr>`);
+ rows('feesTable',db.fees,x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.learner)}</td><td>${money(x.amount)}</td><td>${esc(x.reference||'—')}</td></tr>`);
+ rows('learnersTable',db.learners,x=>`<tr><td>${esc(x.studentNo)}</td><td>${esc(x.name)}</td><td>${esc(x.className)}</td><td>${esc(x.phone||'—')}</td></tr>`);
+ rows('teachersTable',db.teachers,x=>`<tr><td>${esc(x.employeeNo)}</td><td>${esc(x.name)}</td><td>${esc(x.subject)}</td><td>${esc(x.phone||'—')}</td></tr>`);
+ rows('attendanceTable',db.attendance,x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.type)}</td><td>${esc(x.name)}</td><td><span class="tag ${x.status==='Absent'?'red':x.status==='Present'?'green':''}">${esc(x.status)}</span></td></tr>`);
+ rows('expensesTable',db.expenses,x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.description)}</td><td>${esc(x.category)}</td><td>${money(x.amount)}</td></tr>`);
+ document.getElementById('eventsList').innerHTML=db.events.length?db.events.slice().reverse().map(x=>`<p>📎 <b>${esc(x.title)}</b> — ${esc(x.category)}${x.fileName?' · '+esc(x.fileName):''}</p>`).join(''):'No event records yet.';
+ document.getElementById('messagesList').innerHTML=db.messages.length?db.messages.slice().reverse().map(x=>`<div class="card" style="margin:8px 0"><b>${esc(x.recipient)}</b> · ${esc(x.phone)}<p>${esc(x.message)}</p><small class="muted">Saved draft — not sent</small></div>`).join(''):'No saved drafts.';
+ document.getElementById('fIncome').textContent=money(income);document.getElementById('fExpenses').textContent=money(expenses);document.getElementById('fBalance').textContent=money(income-expenses);document.getElementById('fCount').textContent=db.fees.length+db.expenses.length;
+ document.getElementById('hAttendance').textContent=db.attendance.length;document.getElementById('hIncome').textContent=money(income);document.getElementById('hExpenses').textContent=money(expenses);document.getElementById('hEvents').textContent=db.events.length;
+ const present=db.attendance.filter(x=>x.status==='Present').length,absent=db.attendance.filter(x=>x.status==='Absent').length,late=db.attendance.filter(x=>x.status==='Late').length;
+ document.getElementById('attendanceSummary').innerHTML=db.attendance.length?`<p><b>Total:</b> ${db.attendance.length} &nbsp; <span class="tag green">Present: ${present}</span> &nbsp; <span class="tag red">Absent: ${absent}</span> &nbsp; <span class="tag">Late: ${late}</span></p>`:'No attendance records yet.';
+ const latest=[...db.fees.map(x=>({kind:'Fee',label:x.learner,amount:money(x.amount),date:x.date})),...db.expenses.map(x=>({kind:'Expense',label:x.description,amount:money(x.amount),date:x.date})),...db.events.map(x=>({kind:'Event/file',label:x.title,amount:'—',date:x.date||'—'}))].slice(-8).reverse();
+ document.getElementById('headLatest').innerHTML=latest.length?`<div class="tablewrap"><table><thead><tr><th>Type</th><th>Record</th><th>Amount</th><th>Date</th></tr></thead><tbody>${latest.map(x=>`<tr><td>${esc(x.kind)}</td><td>${esc(x.label)}</td><td>${esc(x.amount)}</td><td>${esc(x.date)}</td></tr>`).join('')}</tbody></table></div>`:'No records yet.';
+ const activity=[];if(db.learners.length)activity.push(`${db.learners.length} learner(s) registered`);if(db.attendance.length)activity.push(`${db.attendance.length} attendance entries`);if(db.fees.length)activity.push(`${db.fees.length} fee payments recorded`);if(db.expenses.length)activity.push(`${db.expenses.length} expenses recorded`);
+ document.getElementById('recent').innerHTML=activity.length?activity.map(x=>`<p>• ${esc(x)}</p>`).join(''):'No activity yet. Add records in a department to get started.';
+}
+function showPage(page){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));document.getElementById('page-'+page).classList.remove('hidden');document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));if(page==='head')renderAll()}
+document.querySelectorAll('#nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+document.getElementById('role').addEventListener('change',e=>{const p={'School Reception':'reception','Teacher Department':'teachers','Head Department':'head','Finance Department':'finance','E-Lab':'elab'}[e.target.value]||'dashboard';showPage(p)});
+function onSubmit(id,handler){document.getElementById(id).addEventListener('submit',e=>{e.preventDefault();try{handler(e.currentTarget);e.currentTarget.reset();save();alert('Record saved in this browser.')}catch(err){alert(err.message||'Could not save record.')}})}
+onSubmit('feeForm',f=>{const amount=num(f,'amount');if(amount<=0)throw Error('Enter a valid payment amount.');db.fees.push({learner:val(f,'learner'),amount,reference:val(f,'reference'),date:val(f,'date')||dateNow()})});
+onSubmit('visitorForm',f=>db.visitors.push({name:val(f,'name'),phone:val(f,'phone'),purpose:val(f,'purpose'),arrival:val(f,'arrival')}));
+onSubmit('eventForm',f=>{const file=f.elements.file.files[0];db.events.push({title:val(f,'title'),category:val(f,'category'),fileName:file?.name||'',date:dateNow(),note:'File metadata only in this prototype'});if(file)alert('The file name is recorded, but the actual file is not uploaded. A server file-storage service is needed for that.')});
+onSubmit('learnerForm',f=>{const studentNo=val(f,'studentNo');if(db.learners.some(x=>x.studentNo===studentNo))throw Error('That student number already exists.');db.learners.push({name:val(f,'name'),studentNo,className:val(f,'className'),phone:val(f,'phone')})});
+onSubmit('teacherForm',f=>{const employeeNo=val(f,'employeeNo');if(db.teachers.some(x=>x.employeeNo===employeeNo))throw Error('That employee number already exists.');db.teachers.push({name:val(f,'name'),employeeNo,subject:val(f,'subject'),phone:val(f,'phone')})});
+onSubmit('attendanceForm',f=>db.attendance.push({type:val(f,'type'),name:val(f,'name'),date:val(f,'date')||dateNow(),status:val(f,'status')}));
+onSubmit('expenseForm',f=>{const amount=num(f,'amount');if(amount<=0)throw Error('Enter a valid expense amount.');db.expenses.push({description:val(f,'description'),amount,category:val(f,'category'),date:val(f,'date')||dateNow(),reference:val(f,'reference')})});
+onSubmit('messageForm',f=>db.messages.push({recipient:val(f,'recipient'),phone:val(f,'phone'),message:val(f,'message'),date:dateNow()}));
+document.getElementById('headRefresh').addEventListener('click',renderAll);
+document.getElementById('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='schoolhub-data.json';a.click();URL.revokeObjectURL(a.href)});
+const catalogue=[
+ {title:'Mathematics revision notes',subject:'Mathematics',type:'Notes',desc:'Sample entry. Add an authorised PDF or school resource.'},
+ {title:'Introduction to Biology',subject:'Biology',type:'Textbook',desc:'Sample catalogue entry for biology learners.'},
+ {title:'History practice questions',subject:'History',type:'Practice',desc:'Sample entry for revision and classroom practice.'},
+ {title:'English language study guide',subject:'English',type:'Notes',desc:'Sample entry for reading and language exercises.'},
+ {title:'Physics fundamentals',subject:'Physics',type:'Textbook',desc:'Sample entry for physics topics and definitions.'},
+ {title:'Geography map skills',subject:'Geography',type:'Practice',desc:'Sample entry for geography practice.'}
+];
+function renderBooks(){const q=document.getElementById('bookSearch').value.toLowerCase(),t=document.getElementById('bookType').value;const list=catalogue.filter(b=>(t==='all'||b.type===t)&&(b.title+' '+b.subject+' '+b.desc).toLowerCase().includes(q));document.getElementById('books').innerHTML=list.length?list.map(b=>`<div class="book"><span class="tag">${esc(b.type)}</span><h3>${esc(b.title)}</h3><p>${esc(b.subject)} · ${esc(b.desc)}</p><button class="secondary" onclick="loadBook('${esc(b.title).replace(/'/g,'&#39;')}')">Read sample text</button></div>`).join(''):'<p class="empty">No matching resources. Try another search.</p>'}
+window.loadBook=function(title){document.getElementById('readText').value=title+'. This is a sample library entry. Add authorised learning content to your school library to read the complete book.';document.getElementById('readText').focus()};
+document.getElementById('bookSearch').addEventListener('input',renderBooks);document.getElementById('bookType').addEventListener('change',renderBooks);
+function loadVoices(){if(!('speechSynthesis'in window))return;const sel=document.getElementById('voiceSelect'),old=sel.value;const voices=speechSynthesis.getVoices();sel.innerHTML='<option value="">Default available voice</option>'+voices.map((v,i)=>`<option value="${i}">${esc(v.name)} (${esc(v.lang)})</option>`).join('');if(old)sel.value=old}
+if('speechSynthesis'in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
+document.getElementById('speakBtn').addEventListener('click',()=>{if(!('speechSynthesis'in window)){alert('Text-to-speech is not supported in this browser. Try an updated browser.');return}const text=document.getElementById('readText').value.trim();if(!text){alert('Enter or select some text to read aloud first.');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);const voices=speechSynthesis.getVoices();const chosen=document.getElementById('voiceSelect').value;if(chosen!==''&&voices[Number(chosen)])u.voice=voices[Number(chosen)];else{const style=document.getElementById('voiceStyle').value;if(style!=='any'){const match=voices.find(v=>style==='female'?/female|woman|zira|samantha|victoria|karen/i.test(v.name):/male|man|david|mark|daniel|alex/i.test(v.name));if(match)u.voice=match}}u.rate=Number(document.getElementById('rate').value);u.pitch=Number(document.getElementById('pitch').value);speechSynthesis.speak(u)});
+document.getElementById('pauseBtn').addEventListener('click',()=>speechSynthesis?.pause());document.getElementById('resumeBtn').addEventListener('click',()=>speechSynthesis?.resume());document.getElementById('stopBtn').addEventListener('click',()=>speechSynthesis?.cancel());
+document.querySelectorAll('form input[type=date]').forEach(x=>x.value=dateNow());
+renderAll();renderBooks();
+</script>
+</body>
+</html>
